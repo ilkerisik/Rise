@@ -10,4 +10,8 @@
     <ProjectReference Include="..\..\ApiCore\Rise.PhoneBook.ApiCore.Core\Rise.PhoneBook.ApiCore.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Concrete\" />
+  </ItemGroup>
+
 </Project>

@@ -6,4 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ApiCore\Rise.PhoneBook.ApiCore.Core\Rise.PhoneBook.ApiCore.Core.csproj" />
+    <ProjectReference Include="..\Rise.PhoneBook.ReportApi.Business\Rise.PhoneBook.ReportApi.Business.csproj" />
+  </ItemGroup>
+
 </Project>
