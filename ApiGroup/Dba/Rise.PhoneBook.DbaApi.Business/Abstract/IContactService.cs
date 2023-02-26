@@ -1,4 +1,6 @@
 ﻿using Rise.PhoneBook.ApiCore.Core.Custom;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.RequestModels;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.ResponseModels;
 using Rise.PhoneBook.DbaApi.Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -16,5 +18,7 @@ namespace Rise.PhoneBook.DbaApi.Business.Abstract
         StatusModel<Contact> Add(Contact entity);
         StatusModel<Contact> Update(Contact entity);
         StatusModel<Contact> Delete(Expression<Func<Contact, bool>> filter);
+        StatusModel<ResPersonContactModel> AddCustom(ReqPersonContactModel person);
+
     }
 }

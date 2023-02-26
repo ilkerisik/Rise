@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ComplexTypes\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\ApiCore\Rise.PhoneBook.ApiCore.Core\Rise.PhoneBook.ApiCore.Core.csproj" />
   </ItemGroup>
 

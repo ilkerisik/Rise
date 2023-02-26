@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Rise.PhoneBook.ApiCore.Core.Custom;
 using Rise.PhoneBook.DbaApi.Business.Abstract;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.RequestModels;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.ResponseModels;
 using Rise.PhoneBook.DbaApi.Entities.Concrete;
 
 namespace Rise.PhoneBook.DbaApi.WebApi.Controllers
@@ -12,7 +14,7 @@ namespace Rise.PhoneBook.DbaApi.WebApi.Controllers
     {
         /*
          Beklenen işlevler:
-                • Rehberde kişi oluşturma
+                • Rehberde kişi oluşturma --> CreatePerson
                 • Rehberde kişi kaldırma
                 • Rehberdeki kişiye iletişim bilgisi ekleme
                 • Rehberdeki kişiden iletişim bilgisi kaldırma
@@ -45,5 +47,21 @@ namespace Rise.PhoneBook.DbaApi.WebApi.Controllers
             return listResult;
         }
 
+
+        /// <summary>
+        /// Kişi Ekleme Metodu
+        /// </summary>
+        /// <param name="person">Kişiye ait olan bilgiler model json olarak gönderilecektir</param>
+        /// <returns></returns>
+        [HttpPost("Contact/CreatePerson")]
+        public async Task<StatusModel<ResPersonContactModel>> CreatePerson(ReqPersonContactModel person)
+        {
+            var result = new StatusModel<ResPersonContactModel>();
+            await Task.Factory.StartNew(() =>
+            {
+                result = _contactService.AddCustom(person);
+            });
+            return result;
+        }
     }
 }

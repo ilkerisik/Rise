@@ -1,6 +1,8 @@
 ﻿using Rise.PhoneBook.ApiCore.Core.Custom;
 using Rise.PhoneBook.DbaApi.Business.Abstract;
 using Rise.PhoneBook.DbaApi.DataAccess.Abstract;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.RequestModels;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.ResponseModels;
 using Rise.PhoneBook.DbaApi.Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -120,6 +122,70 @@ namespace Rise.PhoneBook.DbaApi.Business.Concrete
                 {
                     _contactDal.Delete(entity);
                     returnData.Status.Message = "İşlem Başarılı";
+                    returnData.Status.Status = Enums.StatusEnum.Successful;
+                }
+            }
+            catch (Exception ex)
+            {
+                returnData.Status.Message = "Hata Oluştu";
+                returnData.Status.Exception = ex.Message;
+                returnData.Status.Status = Enums.StatusEnum.Error;
+            }
+            return returnData;
+        }
+        public StatusModel<ResPersonContactModel> AddCustom(ReqPersonContactModel person)
+        {
+            var returnData = new StatusModel<ResPersonContactModel>();
+            try
+            {
+                Contact? returnDataEntity = null;
+                var g = Guid.NewGuid();
+                var data = new Contact()
+                {
+                    Firstname = person.Firstname,
+                    Lastname = person.Lastname,
+                    Company = person.Company,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+                //Eklenmek istenen Kişi için Id gönderilmezse üret ?
+                if (!person.PersonId.HasValue || person.PersonId == Guid.Empty)
+                {
+                    data.Id = g;
+                    returnDataEntity = _contactDal.Add(data);
+                    returnData.Status.Message = "Kişi eklendi.";
+                }
+                else
+                {
+                    //Kişi Id gönderildi ise sistemde var mı kontrol et ve ekle
+                    var existData = _contactDal.Get(i => i.Id == person.PersonId);
+                    if (existData == null)
+                    {
+                        data.Id = person.PersonId.Value;
+                        returnDataEntity = _contactDal.Add(data);
+                        returnData.Status.Message = "Kişi eklendi.";
+                    }
+                    else
+                    {
+                        returnData.Status.Message = "Eklemek istediğiniz id sistemde tanımlı!";
+                    }
+                }
+                if (returnDataEntity == null)
+                {
+                    returnData.Status.Status = Enums.StatusEnum.Warning;
+                    if (string.IsNullOrEmpty(returnData.Status.Message))
+                        returnData.Status.Message = "Kişi eklenemedi.";
+                }
+                else
+                {
+                    returnData.Entity = new ResPersonContactModel()
+                    {
+                        PersonId = returnDataEntity.Id,
+                        Company = returnDataEntity.Company,
+                        Firstname = returnDataEntity.Firstname,
+                        Lastname = returnDataEntity.Lastname,
+                        CreatedOn = returnDataEntity.CreatedOn,
+                    };
                     returnData.Status.Status = Enums.StatusEnum.Successful;
                 }
             }

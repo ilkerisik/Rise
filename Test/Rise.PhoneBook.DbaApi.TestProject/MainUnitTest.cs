@@ -1,7 +1,10 @@
 using Newtonsoft.Json;
 using Rise.PhoneBook.ApiCore.Core.Custom;
 using Rise.PhoneBook.DbaApi.DataAccess.Concrete;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.ResponseModels;
 using Rise.PhoneBook.DbaApi.Entities.Concrete;
+using System.Text;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.RequestModels;
 
 namespace Rise.PhoneBook.DbaApi.TestProject
 {
@@ -59,6 +62,79 @@ namespace Rise.PhoneBook.DbaApi.TestProject
             }
         }
         #endregion
+        #region Kiþi Ekleme Ýþlemleri
+        #region Unique Veriler ile Tam Ýçerik Gönderme Testi
+        [Fact]
+        public async void CreatePerson1()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                //DummyData ile Tam veri  Oluþturma
+                var dataJson = new ReqPersonContactModel()
+                {
+                    PersonId = Guid.NewGuid(), //Her zaman yeni üretildiði için eklenmesi beklenir
+                    Firstname = DummyData.RandomFirstName(),
+                    Lastname = DummyData.RandomLastname(),
+                    Company = DummyData.RandomCompanyName(),
+                };
 
+                var httpContent = new StringContent(dataJson.ToJson(), Encoding.UTF8, "application/json");
+                using (var response = await httpClient.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreatePerson", httpContent))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactModel>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                }
+            }
+        }
+        #endregion
+        #region Ýlk veri olmayan ikinci veri önce eklenen veri olacak
+        [Fact]
+        public async void CreatePerson2()
+        {
+            //Ýlk Ýþlem Baþarýlý olarak beklenmekte
+            using (var httpClient = new HttpClient())
+            {
+                //DummyData ile Company boþ veri  Oluþturma
+                var dataJson = new ReqPersonContactModel()
+                {
+                    PersonId = Guid.Parse("99999999-9999-9999-9999-999999999999"),
+                    Firstname = DummyData.RandomFirstName(),
+                    Lastname = DummyData.RandomLastname()
+                };
+
+                var httpContent = new StringContent(dataJson.ToJson(), Encoding.UTF8, "application/json");
+                using (var response = await httpClient.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreatePerson", httpContent))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactModel>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                }
+            }
+
+            //Ýkinci veri Daha Önce Eklendi
+            using (var httpClient = new HttpClient())
+            {
+                //DummyData ile Tam veri  Oluþturma
+                var dataJson = new ReqPersonContactModel()
+                {
+                    PersonId = Guid.Parse("99999999-9999-9999-9999-999999999999"),
+                    Firstname = DummyData.RandomFirstName(),
+                    Lastname = DummyData.RandomLastname(),
+                    Company = DummyData.RandomCompanyName(),
+                };
+
+                var httpContent = new StringContent(dataJson.ToJson(), Encoding.UTF8, "application/json");
+                using (var response = await httpClient.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreatePerson", httpContent))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactModel>>(apiResponse);
+                    //Eklemek istediðiniz id sistemde tanýmlý!
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Warning);
+                }
+            }
+        }
+        #endregion 
+        #endregion
     }
 }
