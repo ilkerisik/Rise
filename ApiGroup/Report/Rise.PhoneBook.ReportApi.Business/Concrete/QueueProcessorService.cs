@@ -3,6 +3,8 @@ using Rise.PhoneBook.ApiCore.Core.Custom;
 using Rise.PhoneBook.ReportApi.Business.Abstract;
 using Microsoft.Extensions.Configuration;
 using System.Text;
+using Rise.PhoneBook.ApiCore.Core.Models;
+using Rise.PhoneBook.ReportApi.Entities.ComplexTypes.ResponseModels;
 
 namespace Rise.PhoneBook.ReportApi.Business.Concrete
 {
@@ -24,10 +26,9 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
             factory.RequestedHeartbeat = new TimeSpan(0, 0, 90);
             return factory;
         }
-
-        public StatusModel<string> QueueSend(Guid requestId, string location)
+        public StatusModel<ResQueueProcessorModel> QueueSend(MainQueueRequest req, List<MqProcessPriority> mqQueueProcess, Enums.QueueProcess routingKey)
         {
-            StatusModel<string> result = new StatusModel<string>() { Status = new StatusModel() { } };
+            StatusModel<ResQueueProcessorModel> result = new StatusModel<ResQueueProcessorModel>() { Status = new StatusModel() { } };
             try
             {
                 var factory = CreateConnectionFactory();
@@ -38,18 +39,20 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
                         var properties = channel.CreateBasicProperties();
                         properties.Persistent = true;
                         properties.CorrelationId = Guid.Empty.ToString();
-                        properties.MessageId = requestId.ToString();
+                        properties.MessageId = req.RequestId;
                         properties.Headers = new Dictionary<string, object>();
-                        channel.BasicPublish(exchange: "", routingKey: "Main".ToString(), basicProperties: properties, body: Encoding.UTF8.GetBytes(location));
+                        properties.Headers.Add(Enums.MqHeaders.RequestId.ToString(), req.RequestId);
+                        properties.Headers.Add(Enums.MqHeaders.MqQueueProcess.ToString(), mqQueueProcess.ToJson());
+                        channel.BasicPublish(exchange: "", routingKey: routingKey.ToString(), basicProperties: properties, body: req.ToJsonByteArray());
                     }
                 }
-                result.Entity = requestId.ToString();
+                result.Entity = new ResQueueProcessorModel() { IsSend = true, RequestId = req.RequestId };
                 result.Status.Status = Enums.StatusEnum.Successful;
                 result.Status.Message = "Talep Oluşturuldu";
             }
             catch (Exception ex)
             {
-                result.Entity = "";
+                result.Entity = new ResQueueProcessorModel() { IsSend = false };
                 result.Status.Status = Enums.StatusEnum.Error;
                 result.Status.Message = ex.Message;
             }
