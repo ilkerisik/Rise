@@ -1,5 +1,6 @@
 ﻿using Rise.PhoneBook.ApiCore.Core.Custom;
 using Rise.PhoneBook.ApiCore.Core.Models;
+using Rise.PhoneBook.ReportApi.Entities.ComplexTypes.ResponseModels;
 using Rise.PhoneBook.ReportApi.Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -23,8 +24,7 @@ namespace Rise.PhoneBook.ReportApi.Business.Abstract
         StatusModel<byte[]> QReport(byte[] data, ref List<MqProcessPriority> mqProcesses);
         StatusModel<byte[]> QFile(byte[] data, ref List<MqProcessPriority> mqProcesses);
         StatusModel<string> QReportLast(byte[] data, ref List<MqProcessPriority> mqProcesses);
-
-
+        Task<ResLocationReportModel> GetReport(string url, string location);
 
     }
 }

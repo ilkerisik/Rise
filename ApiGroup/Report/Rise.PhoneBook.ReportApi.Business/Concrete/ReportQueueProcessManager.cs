@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Newtonsoft.Json;
 using Rise.PhoneBook.ApiCore.Core.Custom;
 using Rise.PhoneBook.ApiCore.Core.Models;
 using Rise.PhoneBook.ReportApi.Business.Abstract;
 using Rise.PhoneBook.ReportApi.DataAccess.Abstract;
+using Rise.PhoneBook.ReportApi.Entities.ComplexTypes.ResponseModels;
 using Rise.PhoneBook.ReportApi.Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -17,9 +19,11 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
     public class ReportQueueProcessManager : IReportQueueProcessService
     {
         private readonly IReportQueueProcessDal _reportQueueProcessDal;
-        public ReportQueueProcessManager(IReportQueueProcessDal reportQueueProcess)
+        IExcelFactoryService _excelFactoryService;
+        public ReportQueueProcessManager(IReportQueueProcessDal reportQueueProcess, IExcelFactoryService excelFactoryService)
         {
             _reportQueueProcessDal = reportQueueProcess;
+            _excelFactoryService = excelFactoryService;
         }
         public StatusModel<IList<ReportQueueProcess>> GetList(Expression<Func<ReportQueueProcess, bool>> filter)
         {
@@ -240,15 +244,33 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
             resLocal.IsRunned = true;
 
             #region DbaApi Sorgulaması Yapılacak
-            if (true)
+            var report = GetReport(dataRes.ApiUrl, dataRes.LocationFilter);
+            report.Wait();
+            if (report.IsCompleted && report.Result != null)
             {
-
-                //Kuyruklama sıralı olarak senkron çalışıyor mu diye beklemeye alındı
-                Thread.Sleep(new Random().Next(1000, 10000));
-                dataRes.FilePath = "/test.txt";
-                dataRes.Message = "Dosya Hazırlandı";
-                res.Status.Status = StatusEnum.Successful;
-                res.Status.Message = dataRes.FilePath;
+                if (report.Result.status.status == StatusEnum.Successful)
+                {
+                    var excelPrepare = _excelFactoryService.AllModelToExcelFileSave(dataRes.RequestId, report.Result.entity.ToList());
+                    if (excelPrepare.Status.Status == StatusEnum.Successful)
+                    {
+                        //Kuyruklama sıralı olarak senkron çalışıyor mu diye beklemeye alındı
+                        //Thread.Sleep(new Random().Next(1000, 10000));
+                        dataRes.FilePath = excelPrepare.Entity;
+                        dataRes.Message = "Dosya Hazırlandı";
+                        res.Status.Status = StatusEnum.Successful;
+                        res.Status.Message = dataRes.FilePath;
+                    }
+                    else
+                    {
+                        res.Status.Status = excelPrepare.Status.Status;
+                        res.Status.Message = excelPrepare.Status.Message;
+                    }
+                }
+                else
+                {
+                    res.Status.Status = report.Result.status.status;
+                    res.Status.Message = report.Result.status.message;
+                }
             }
             else
             {
@@ -289,5 +311,26 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
 
             return res;
         }
+
+
+        /// <summary>
+        /// Kişi mikroservisinden rapor alma işlemleri
+        /// </summary>
+        /// <param name="location"></param>
+        /// <returns>LOKASYON | KISI SAYISI | TELEFON NUMARASI SAYISI</returns>
+        public async Task<ResLocationReportModel> GetReport(string url, string location)
+        {
+            ResLocationReportModel receivedReservation = new ResLocationReportModel();
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{url}/api/MainContact/Contact/GetReportData/{location}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    receivedReservation = apiResponse.FromJson<ResLocationReportModel>();
+                }
+            }
+            return receivedReservation;
+        }
+
     }
 }

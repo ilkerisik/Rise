@@ -12,5 +12,6 @@ namespace Rise.PhoneBook.ApiCore.Core.Models
         public string LocationFilter { get; set; }
         public string Message { get; set; }
         public string FilePath { get; set; }
+        public string ApiUrl { get; set; }
     }
 }

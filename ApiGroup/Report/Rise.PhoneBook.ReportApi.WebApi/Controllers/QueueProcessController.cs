@@ -33,7 +33,8 @@ namespace Rise.PhoneBook.ReportApi.WebApi.Controllers
             return _queueProcessorService.QueueSend(new MainQueueRequest()
             {
                 RequestId = requestId,
-                LocationFilter = location
+                LocationFilter = location,
+                ApiUrl = _config.GetValue<string>("ReportApi:Url")
             }, q, Enums.QueueProcess.QReport);
         }
     }

@@ -18,6 +18,7 @@ namespace Rise.PhoneBook.ReportApi.WebApi
             builder.Services.AddTransient<IQueueProcessorService, QueueProcessorService>();
             builder.Services.AddTransient<IReportQueueProcessDal, EfReportQueueProcessDal>();
             builder.Services.AddTransient<IReportQueueProcessService, ReportQueueProcessManager>();
+            builder.Services.AddTransient<IExcelFactoryService, ExcelFactoryService>();
 
             //Rapor Servisi içerisindeki Background servisi ile RabbitMq koordinasyonu saðlamak
             builder.Services.AddHostedService<MqHostedService>();
