@@ -17,7 +17,9 @@ namespace Rise.PhoneBook.ApiCore.Core.Custom
             [System.ComponentModel.Description("Uyarı")]
             Warning = 2,
             [System.ComponentModel.Description("Veri Yok")]
-            EmptyData = 3
+            EmptyData = 3,
+            [System.ComponentModel.Description("Tanımlanmamış")]
+            Undefined = 4,
         }
         public enum ContactTypeEnum
         {
@@ -29,5 +31,26 @@ namespace Rise.PhoneBook.ApiCore.Core.Custom
             Location = 3,
 
         }
+
+        #region Kuyruk İşlemleri
+        /// <summary>
+        /// Kuyruk Yapısını 3 aşamada tasarlıyoruz
+        /// 1 - Kuyruğa Alma İşçileri
+        /// 2 - Rapor ve Dosya Alma İşçileri
+        /// 3 - İşlemi Tamamlama
+        /// </summary>
+        public enum QueueProcess
+        {
+            QReport,
+            QReportProcess,
+            QReportLastControl
+        }
+
+        public enum MqHeaders
+        {
+            MqQueueProcess,
+            RequestId
+        } 
+        #endregion
     }
 }

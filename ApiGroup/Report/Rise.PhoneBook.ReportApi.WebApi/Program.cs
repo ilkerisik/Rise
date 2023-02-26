@@ -2,6 +2,8 @@ using Microsoft.OpenApi.Models;
 using Rise.PhoneBook.ApiCore.Core.Custom;
 using Rise.PhoneBook.ReportApi.Business.Abstract;
 using Rise.PhoneBook.ReportApi.Business.Concrete;
+using Rise.PhoneBook.ReportApi.DataAccess.Abstract;
+using Rise.PhoneBook.ReportApi.DataAccess.Concrete;
 using Rise.PhoneBook.ReportApi.WebApi.BgService;
 using System.Text.Json.Serialization;
 
@@ -14,9 +16,12 @@ namespace Rise.PhoneBook.ReportApi.WebApi
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddTransient<IQueueProcessorService, QueueProcessorService>();
+            builder.Services.AddTransient<IReportQueueProcessDal, EfReportQueueProcessDal>();
+            builder.Services.AddTransient<IReportQueueProcessService, ReportQueueProcessManager>();
 
             //Rapor Servisi içerisindeki Background servisi ile RabbitMq koordinasyonu saðlamak
             builder.Services.AddHostedService<MqHostedService>();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
