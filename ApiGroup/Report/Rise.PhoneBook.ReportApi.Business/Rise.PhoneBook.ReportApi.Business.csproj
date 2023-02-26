@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\ApiCore\Rise.PhoneBook.ApiCore.Core\Rise.PhoneBook.ApiCore.Core.csproj" />
+    <ProjectReference Include="..\Rise.PhoneBook.ReportApi.DataAccess\Rise.PhoneBook.ReportApi.DataAccess.csproj" />
+    <ProjectReference Include="..\Rise.PhoneBook.ReportApi.Entities\Rise.PhoneBook.ReportApi.Entities.csproj" />
+  </ItemGroup>
+
 </Project>
