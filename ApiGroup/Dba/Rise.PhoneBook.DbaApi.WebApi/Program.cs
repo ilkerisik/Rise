@@ -1,3 +1,8 @@
+using Rise.PhoneBook.DbaApi.Business.Abstract;
+using Rise.PhoneBook.DbaApi.Business.Concrete;
+using Rise.PhoneBook.DbaApi.DataAccess.Abstract;
+using Rise.PhoneBook.DbaApi.DataAccess.Concrete;
+
 namespace Rise.PhoneBook.DbaApi.WebApi
 {
     public class Program
@@ -6,7 +11,12 @@ namespace Rise.PhoneBook.DbaApi.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.Services.AddTransient<IContactService, ContactManager>();
+            builder.Services.AddTransient<IContactDal, EfContactDal>();
+
+            builder.Services.AddTransient<IContactInfoService, ContactInfoManager>();
+            builder.Services.AddTransient<IContactInfoDal, EfContactInfoDal>();
+
 
             builder.Services.AddControllers();
 
