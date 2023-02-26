@@ -32,11 +32,12 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
                 if (!Directory.Exists(file))
                 {
                     Directory.CreateDirectory(file);
-                   
+
                 }
                 file += requestId + ".xlsx";
                 wb.SaveAs(file);
-                returnData.Entity = "/Content/" + requestId + ".xlsx";
+                returnData.Entity = $"/api/Report/DownloadReport/" + requestId;
+                //returnData.Entity = "/Content/" + requestId + ".xlsx";
                 returnData.Status.Message = "İşlem Başarılı";
                 returnData.Status.Status = Enums.StatusEnum.Successful;
             }

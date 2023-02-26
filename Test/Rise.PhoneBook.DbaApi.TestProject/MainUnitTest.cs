@@ -428,7 +428,6 @@ namespace Rise.PhoneBook.DbaApi.TestProject
         }
         #endregion
 
-
         #region Rapor Sorgulama Ýþlemleri
         [Fact]
         public async void GetReport()

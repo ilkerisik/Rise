@@ -311,8 +311,6 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
 
             return res;
         }
-
-
         /// <summary>
         /// Kişi mikroservisinden rapor alma işlemleri
         /// </summary>
@@ -331,6 +329,71 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
             }
             return receivedReservation;
         }
-
+        public StatusModel<ResReportDetailModel> GetReportStatus(string url,Guid requestId)
+        {
+            var returnData = new StatusModel<ResReportDetailModel>();
+            try
+            {
+                var returnDataEntity = _reportQueueProcessDal.Get(i => i.Id == requestId);
+                if (returnDataEntity == null)
+                {
+                    returnData.Status.Message = "Veri Bulunamadı";
+                    returnData.Status.Status = Enums.StatusEnum.EmptyData;
+                }
+                else
+                {
+                    returnData.Entity = new ResReportDetailModel()
+                    {
+                        RequestId = returnDataEntity.Id,
+                        RequestDate = returnDataEntity.CreatedOn,
+                        ReportCreateDate = returnDataEntity.ChangedOn,
+                        DownloadUrl = url+returnDataEntity.Filename,
+                        Status = returnDataEntity.QueueStatus
+                    };
+                    returnData.Status.Message = "İşlem Başarılı";
+                    returnData.Status.Status = Enums.StatusEnum.Successful;
+                }
+            }
+            catch (Exception ex)
+            {
+                returnData.Status.Message = "Hata Oluştu";
+                returnData.Status.Exception = ex.Message;
+                returnData.Status.Status = Enums.StatusEnum.Error;
+            }
+            return returnData;
+        }
+        public StatusModel<List<ResReportDetailModel>> GetAllReportStatus(string url)
+        {
+            var returnData = new StatusModel<List<ResReportDetailModel>>();
+            try
+            {
+                var returnDataEntity = _reportQueueProcessDal.GetEntities(i => true);
+                if (returnDataEntity == null || returnDataEntity.Count == 0)
+                {
+                    returnData.Status.Message = "Veri Bulunamadı";
+                    returnData.Status.Status = Enums.StatusEnum.EmptyData;
+                }
+                else
+                {
+                    returnData.Entity = returnDataEntity.Select(i => new ResReportDetailModel()
+                    {
+                        RequestId = i.Id,
+                        RequestDate = i.CreatedOn,
+                        ReportCreateDate = i.ChangedOn,
+                        DownloadUrl = url+i.Filename,
+                        Status = i.QueueStatus
+                    }).ToList();
+                    returnData.Status.Message = "İşlem Başarılı";
+                    returnData.Status.Status = Enums.StatusEnum.Successful;
+                }
+            }
+            catch (Exception ex)
+            {
+                returnData.Status.Message = "Hata Oluştu";
+                returnData.Status.Exception = ex.Message;
+                returnData.Status.Status = Enums.StatusEnum.Error;
+            }
+            return returnData;
+        }
     }
 }

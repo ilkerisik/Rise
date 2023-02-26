@@ -25,6 +25,8 @@ namespace Rise.PhoneBook.ReportApi.Business.Abstract
         StatusModel<byte[]> QFile(byte[] data, ref List<MqProcessPriority> mqProcesses);
         StatusModel<string> QReportLast(byte[] data, ref List<MqProcessPriority> mqProcesses);
         Task<ResLocationReportModel> GetReport(string url, string location);
+        StatusModel<ResReportDetailModel> GetReportStatus(string url,Guid requestId);
+        StatusModel<List<ResReportDetailModel>> GetAllReportStatus(string url);
 
     }
 }
