@@ -1,5 +1,6 @@
 ﻿using Rise.PhoneBook.ApiCore.Core;
 using Rise.PhoneBook.DbaApi.DataAccess.Abstract;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.ResponseModels;
 using Rise.PhoneBook.DbaApi.Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -22,5 +23,33 @@ namespace Rise.PhoneBook.DbaApi.DataAccess.Concrete
         {
             return context.ContactInfos.FirstOrDefault(filter);
         }
+
+        public List<ResLocationReportModel> GetReportData(string location)
+        {
+            using (var context = new ContactContext())
+            {
+                var reportData = from contact in context.Contacts
+                                 join infoLoc in context.ContactInfos
+                                   on contact.Id equals infoLoc.ContactId
+                                 join infoPho in context.ContactInfos
+                                   on contact.Id equals infoPho.ContactId
+                                 where (location == "" || infoLoc.Info == location) && infoLoc.ContactTypeId == 3 && infoPho.ContactTypeId != 3
+                                 group new { x1 = infoLoc.Info, infoLocDef = infoLoc, infoPhoDeff = infoPho } by new
+                                 {
+                                     infoLoc.Info,
+                                     infoLocVal = infoLoc.ContactTypeId,
+                                     infoPhoVal = infoPho.ContactTypeId,
+                                 } into grp
+                                 select new ResLocationReportModel
+                                 {
+                                     Location = grp.Key.Info,
+                                     PersonCount = grp.Select(x => x.infoLocDef.Id).Distinct().Count(),
+                                     PhoneCount = grp.Select(x => x.infoPhoDeff.Id).Distinct().Count()
+                                 };
+
+                return reportData.ToList();
+            }
+        }
+
     }
 }

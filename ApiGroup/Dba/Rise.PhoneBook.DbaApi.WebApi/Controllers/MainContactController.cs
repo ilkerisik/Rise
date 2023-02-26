@@ -202,7 +202,21 @@ namespace Rise.PhoneBook.DbaApi.WebApi.Controllers
 
             return result;
         }
-
+         
+        [HttpGet("Contact/GetReportData/{location?}")]
+        public async Task<StatusModel<List<ResLocationReportModel>>> GetReportData(string? location = "ALL")
+        {
+            var result = new StatusModel<List<ResLocationReportModel>>();
+            if (location == "ALL")
+            {
+                location = "";
+            }
+            await Task.Factory.StartNew(() =>
+            {
+                result = _contactService.GetReportData(location);
+            });
+            return result;
+        }
 
     }
 }

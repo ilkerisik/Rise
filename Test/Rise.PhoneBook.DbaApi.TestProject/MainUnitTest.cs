@@ -343,5 +343,121 @@ namespace Rise.PhoneBook.DbaApi.TestProject
         }
         #endregion
         #endregion
+
+        #region Rasgele 500 Veri Oluþturma
+        [Fact]
+        public async void CreateAllData()
+        {
+            /*
+            Rasgele 500 Kiþi
+            Her Kiþiye rasgele bir lokasyon (çokluda olabilir yapý uygun)
+            Her Kiþiye rasgele 1 - 4 telefon numarasý
+             */
+
+            for (int i = 0; i < 500; i++)
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    //DummyData ile Tam veri  Oluþturma
+                    var dataJson = new ReqPersonContactModel()
+                    {
+                        PersonId = Guid.NewGuid(), //Her zaman yeni üretildiði için eklenmesi beklenir
+                        Firstname = DummyData.RandomFirstName(),
+                        Lastname = DummyData.RandomLastname(),
+                        Company = DummyData.RandomCompanyName(),
+                    };
+
+                    var httpContent = new StringContent(dataJson.ToJson(), Encoding.UTF8, "application/json");
+                    using (var response = await httpClient.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreatePerson", httpContent))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactModel>>(apiResponse);
+
+                        if (res.Status.Status == Enums.StatusEnum.Successful)
+                        {
+                            using (var httpClient2 = new HttpClient())
+                            {
+                                var typ = Enums.ContactTypeEnum.Location;// DummyData.RandomContactType();
+                                                                         //DummyData ile Tam veri  Oluþturma
+                                var dataJson2 = new ReqPersonContactInfoModel()
+                                {
+                                    PersonId = dataJson.PersonId.Value,
+                                    PersonContactId = Guid.NewGuid(),
+                                    ContactType = typ,
+                                    Info = DummyData.RandomContactTypeByInfo(typ)
+                                };
+                                var httpContent2 = new StringContent(dataJson2.ToJson(), Encoding.UTF8, "application/json");
+                                using (var response2 = await httpClient2.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreateInfoToPerson", httpContent2))
+                                {
+                                    string apiResponse2 = await response2.Content.ReadAsStringAsync();
+                                    var res2 = JsonConvert.DeserializeObject<StatusModel<ResPersonContactInfoModel>>(apiResponse2);
+                                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                                }
+                            }
+
+                            for (int ii = 0; ii < new Random().Next(1, 4); ii++)
+                            {
+                                using (var httpClient2 = new HttpClient())
+                                {
+                                    var typ = Enums.ContactTypeEnum.Phone;// DummyData.RandomContactType();
+                                    //DummyData ile Tam veri  Oluþturma
+                                    var dataJson2 = new ReqPersonContactInfoModel()
+                                    {
+                                        PersonId = dataJson.PersonId.Value,
+                                        PersonContactId = Guid.NewGuid(),
+                                        ContactType = typ,
+                                        Info = DummyData.RandomContactTypeByInfo(typ)
+                                    };
+                                    var httpContent2 = new StringContent(dataJson2.ToJson(), Encoding.UTF8, "application/json");
+                                    using (var response2 = await httpClient2.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreateInfoToPerson", httpContent2))
+                                    {
+                                        string apiResponse2 = await response2.Content.ReadAsStringAsync();
+                                        var res2 = JsonConvert.DeserializeObject<StatusModel<ResPersonContactInfoModel>>(apiResponse2);
+                                        Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                                    }
+                                }
+                            }
+                        }
+
+
+
+
+                    }
+                }
+            }
+        }
+        #endregion
+
+
+        #region Rapor Sorgulama Ýþlemleri
+        [Fact]
+        public async void GetReport()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var location = "Konya";
+                using (var response = await httpClient.GetAsync($"{dbaApiUrl}/api/MainContact/Contact/GetReportData/{location}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<List<ResLocationReportModel>>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                }
+            }
+        }
+        [Fact]
+        public async void GetAllReport()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var location = "ALL";
+                using (var response = await httpClient.GetAsync($"{dbaApiUrl}/api/MainContact/Contact/GetReportData/{location}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<List<ResLocationReportModel>>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                }
+            }
+        }
+        #endregion
     }
 }

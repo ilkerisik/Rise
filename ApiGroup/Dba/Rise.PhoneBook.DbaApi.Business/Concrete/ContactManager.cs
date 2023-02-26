@@ -321,5 +321,30 @@ namespace Rise.PhoneBook.DbaApi.Business.Concrete
             }
             return returnData;
         }
+        public StatusModel<List<ResLocationReportModel>> GetReportData(string location)
+        {
+            var returnData = new StatusModel<List<ResLocationReportModel>>();
+            try
+            {
+                returnData.Entity = _contactInfoDal.GetReportData(location);
+                if (returnData.Entity == null || returnData.Entity.Count == 0)
+                {
+                    returnData.Status.Message = "Rapor Verisi Bulunamadı";
+                    returnData.Status.Status = Enums.StatusEnum.EmptyData;
+                }
+                else
+                {
+                    returnData.Status.Message = "İşlem Başarılı";
+                    returnData.Status.Status = Enums.StatusEnum.Successful;
+                }
+            }
+            catch (Exception ex)
+            {
+                returnData.Status.Message = "Hata Oluştu";
+                returnData.Status.Exception = ex.Message;
+                returnData.Status.Status = Enums.StatusEnum.Error;
+            }
+            return returnData;
+        }
     }
 }
