@@ -23,8 +23,4 @@
     <ProjectReference Include="..\Rise.PhoneBook.DbaApi.Entities\Rise.PhoneBook.DbaApi.Entities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Concrete\" />
-  </ItemGroup>
-
 </Project>
