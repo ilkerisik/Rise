@@ -20,8 +20,8 @@ namespace Rise.PhoneBook.ReportApi.DataAccess.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    datas = table.Column<string>(type: "jsonb", nullable: false),
-                    queueprocess = table.Column<string>(type: "jsonb", nullable: false),
+                    datas = table.Column<string>(type: "jsonb", nullable: true),
+                    queueprocess = table.Column<string>(type: "jsonb", nullable: true),
                     last_queue_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     queue_status = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     filename = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),

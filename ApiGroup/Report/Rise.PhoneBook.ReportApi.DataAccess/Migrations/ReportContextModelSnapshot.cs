@@ -37,7 +37,6 @@ namespace Rise.PhoneBook.ReportApi.DataAccess.Migrations
                         .HasColumnName("created_on");
 
                     b.Property<string>("Datas")
-                        .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("datas");
 
@@ -60,7 +59,6 @@ namespace Rise.PhoneBook.ReportApi.DataAccess.Migrations
                         .HasColumnName("queue_status");
 
                     b.Property<string>("Queueprocess")
-                        .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("queueprocess");
 

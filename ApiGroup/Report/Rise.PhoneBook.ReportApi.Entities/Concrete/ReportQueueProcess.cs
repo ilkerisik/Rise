@@ -17,9 +17,10 @@ namespace Rise.PhoneBook.ReportApi.Entities.Concrete
         [Column("id")]
         public Guid Id { get; set; }
         [Column("datas", TypeName = "jsonb")]
-        public string Datas { get; set; }
+        public string? Datas { get; set; }
+
         [Column("queueprocess", TypeName = "jsonb")]
-        public string Queueprocess { get; set; }
+        public string? Queueprocess { get; set; }
         [Column("last_queue_name")]
         [StringLength(255)]
         public string LastQueueName { get; set; }

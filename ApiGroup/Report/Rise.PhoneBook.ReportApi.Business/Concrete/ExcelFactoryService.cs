@@ -32,9 +32,9 @@ namespace Rise.PhoneBook.ReportApi.Business.Concrete
                 if (!Directory.Exists(file))
                 {
                     Directory.CreateDirectory(file);
-                    file += requestId + ".xlsx";
+                   
                 }
-
+                file += requestId + ".xlsx";
                 wb.SaveAs(file);
                 returnData.Entity = "/Content/" + requestId + ".xlsx";
                 returnData.Status.Message = "İşlem Başarılı";
