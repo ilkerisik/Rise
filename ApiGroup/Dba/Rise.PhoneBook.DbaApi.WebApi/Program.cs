@@ -33,6 +33,7 @@ namespace Rise.PhoneBook.DbaApi.WebApi
                             c =>
                             {
                                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Rise Contact Api", Version = "v1" });
+                                c.SchemaFilter<Tools.EnumSchemaFilter>();
                                 c.UseAllOfToExtendReferenceSchemas();
                                 c.CustomOperationIds(e => $"{ExtensionMethods.RootControllerNameEdit(e.ActionDescriptor.AttributeRouteInfo.Template)}{e.ActionDescriptor.RouteValues["action"]}");
                             });

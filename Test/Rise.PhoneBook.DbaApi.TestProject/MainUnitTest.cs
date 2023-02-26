@@ -1,20 +1,16 @@
 using Newtonsoft.Json;
 using Rise.PhoneBook.ApiCore.Core.Custom;
 using Rise.PhoneBook.DbaApi.DataAccess.Concrete;
+using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.RequestModels;
 using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.ResponseModels;
 using Rise.PhoneBook.DbaApi.Entities.Concrete;
+using System;
 using System.Text;
-using Rise.PhoneBook.DbaApi.Entities.ComplexTypes.RequestModels;
 
 namespace Rise.PhoneBook.DbaApi.TestProject
 {
     public class MainUnitTest
     {
-        [Fact]
-        public void MainTest()
-        {
-
-        }
         string dbaApiUrl = "http://localhost:5206";
         #region Doðrudan Veritabaný Eriþim Ýþlemleri
         [Fact]
@@ -135,6 +131,217 @@ namespace Rise.PhoneBook.DbaApi.TestProject
             }
         }
         #endregion 
+        #endregion
+
+
+        #region Kiþi ye Bilgi Ekleme Ýþlemleri
+        #region Unique Veriler ile Tam Ýçerik Gönderme Testi
+        [Fact]
+        public async void CreatePersonInfoByLocation1()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                #region Bilgi olarak Rasgele Lokasyon Ekle
+                var typ = Enums.ContactTypeEnum.Location;
+                //DummyData ile Tam veri  Oluþturma
+                var dataJson = new ResPersonContactInfoModel()
+                {
+                    PersonId = Guid.Parse("99999999-9999-9999-9999-999999999999"),
+                    PersonContactId = Guid.Parse("88888888-8888-8888-8888-888888888888"),
+                    ContactType = typ,
+                    Info = DummyData.RandomContactTypeByInfo(typ)
+                };
+
+                var httpContent = new StringContent(dataJson.ToJson(), Encoding.UTF8, "application/json");
+                using (var response = await httpClient.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreateInfoToPerson", httpContent))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactInfoModel>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                }
+                #endregion
+            }
+        }
+        [Fact]
+        public async void CreatePersonInfoByPhone()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    #region Bilgi olarak Rasgele Telefon Ekle
+                    var typ = Enums.ContactTypeEnum.Phone;
+                    //DummyData ile Tam veri  Oluþturma
+                    var dataJson = new ResPersonContactInfoModel()
+                    {
+                        PersonId = Guid.Parse("99999999-9999-9999-9999-999999999999"),
+                        PersonContactId = Guid.NewGuid(),
+                        ContactType = typ,
+                        Info = DummyData.RandomContactTypeByInfo(typ)
+                    };
+
+                    var httpContent = new StringContent(dataJson.ToJson(), Encoding.UTF8, "application/json");
+                    using (var response = await httpClient.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreateInfoToPerson", httpContent))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactInfoModel>>(apiResponse);
+                        Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                    }
+                    #endregion
+                }
+            }
+        }
+        #endregion
+        #region Ýlk veri olmayan ikinci veri önce eklenen veri olacak
+        [Fact]
+        public async void CreateAllPersonToInfoCreate()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{dbaApiUrl}/api/MainContact/Contact/GetAllPersonList"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<IList<ResPersonContactModel>>>(apiResponse);
+
+                    if (res.Status.Status == Enums.StatusEnum.Successful)
+                        foreach (var item in res.Entity)
+                        {
+                            using (var httpClient2 = new HttpClient())
+                            {
+                                var typ = Enums.ContactTypeEnum.Phone;// DummyData.RandomContactType();
+                                //DummyData ile Tam veri  Oluþturma
+                                var dataJson = new ReqPersonContactInfoModel()
+                                {
+                                    PersonId = item.PersonId,
+                                    PersonContactId = Guid.NewGuid(),
+                                    ContactType = typ,
+                                    Info = DummyData.RandomContactTypeByInfo(typ)
+                                };
+                                var httpContent = new StringContent(dataJson.ToJson(), Encoding.UTF8, "application/json");
+                                using (var response2 = await httpClient2.PostAsync($"{dbaApiUrl}/api/MainContact/Contact/CreateInfoToPerson", httpContent))
+                                {
+                                    string apiResponse2 = await response2.Content.ReadAsStringAsync();
+                                    var res2 = JsonConvert.DeserializeObject<StatusModel<ResPersonContactInfoModel>>(apiResponse2);
+                                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                                }
+                            }
+                        }
+
+
+                }
+            }
+
+        }
+        #endregion
+        #endregion
+
+        #region Tüm Kiþileri Listele
+        [Fact]
+        public async void GetAllPersonList2()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{dbaApiUrl}/api/MainContact/Contact/GetAllPersonList"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<IList<ResPersonContactModel>>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                }
+            }
+        }
+        #endregion
+
+        #region Kiþiler ve Tüm Bilgilerini Listele
+        [Fact]
+        public async void GetPersonByAllInfoList()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var personId = Guid.Parse("ce4bd23d-5f8a-426b-8aeb-74b7b800abcc");
+               
+                using (var response = await httpClient.GetAsync($"{dbaApiUrl}/api/MainContact/Contact/GetPersonByAllInfoList/{personId}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    Assert.True(!string.IsNullOrEmpty(apiResponse));
+
+                    if (!string.IsNullOrEmpty(apiResponse))
+                    {
+                        var res = JsonConvert.DeserializeObject<StatusModel<ResAllPersonInfo>>(apiResponse);
+                        Assert.True(res.Status.Status == Enums.StatusEnum.Successful); 
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region Kiþiden Ýletiþim Bilgileri Silmek
+        [Fact]
+        public async void DeletePersonInInfo1()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                string contactInfoId = "88888888-8888-8888-8888-888888888888";
+                using (var response = await httpClient.DeleteAsync($"{dbaApiUrl}/api/MainContact/Contact/DeleteInfoById/{contactInfoId}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactInfoModel>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                }
+            }
+        }
+        [Fact]
+        public async void DeletePersonByInfo()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                string personId = "99999999-9999-9999-9999-999999999999";
+                string contactInfoId = "3a506101-8724-4b70-ba1e-5166a4e01f3f";
+                using (var response = await httpClient.DeleteAsync($"{dbaApiUrl}/api/MainContact/Contact/DeleteInfoToPerson/{personId}/{contactInfoId}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactInfoModel>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful || res.Status.Status == Enums.StatusEnum.EmptyData);
+                }
+            }
+        }
+        #endregion
+
+        #region Kiþi Silme Ýþlemleri
+        #region Önce Eklenen Kiþi Silme Ýþlemi
+        [Fact]
+        public async void DeletePerson1()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                string personId = "99999999-9999-9999-9999-999999999999";
+                bool isHardDelete = true;
+                using (var response = await httpClient.DeleteAsync($"{dbaApiUrl}/api/MainContact/Contact/DeletePerson/{personId}/{isHardDelete}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactModel>>(apiResponse);
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Successful);
+                }
+            }
+        }
+        #endregion
+        #region Önce silinen veya olmayan veriyi silmeye çalýþmak
+        [Fact]
+        public async void DeletePerson2()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                string personId = "99999999-9999-9999-9999-999999999999";
+                bool isHardDelete = true;
+                using (var response = await httpClient.DeleteAsync($"{dbaApiUrl}/api/MainContact/Contact/DeletePerson/{personId}/{isHardDelete}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<StatusModel<ResPersonContactModel>>(apiResponse);
+                    //Silmek istediðiniz kiþi sistemde bulunamadý.
+                    Assert.True(res.Status.Status == Enums.StatusEnum.Warning);
+                }
+            }
+        }
+        #endregion
         #endregion
     }
 }

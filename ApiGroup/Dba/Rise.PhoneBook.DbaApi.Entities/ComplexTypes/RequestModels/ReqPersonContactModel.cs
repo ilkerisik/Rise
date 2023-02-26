@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rise.PhoneBook.DbaApi.Entities.ComplexTypes.ResponseModels
+namespace Rise.PhoneBook.DbaApi.Entities.ComplexTypes.RequestModels
 {
     public class ReqPersonContactModel
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rise.PhoneBook.ApiCore.Core.Custom;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,26 @@ namespace Rise.PhoneBook.DbaApi.TestProject
         public static string RandomCompanyName()
         {
             return CompanyNameList.OrderBy(i => Guid.NewGuid()).FirstOrDefault();
+        }
+        public static string RandomContactTypeByInfo(Enums.ContactTypeEnum typeEnum)
+        {
+            string res = "";
+            var rnd = new Random();
+            switch (typeEnum)
+            {
+                case Enums.ContactTypeEnum.Phone:
+                    res = $"0 {rnd.Next(543, 555)} {rnd.Next(100, 999)} {rnd.Next(10, 99)} {rnd.Next(10, 99)}";
+                    break;
+                case Enums.ContactTypeEnum.Mail:
+                    res = $"{Guid.NewGuid().ToString().Split('-')[0]}@mail.com";
+                    break;
+                case Enums.ContactTypeEnum.Location:
+                    res = CoList.OrderBy(i => Guid.NewGuid()).FirstOrDefault();
+                    break;
+                default:
+                    break;
+            }
+            return res;
         }
     }
 }

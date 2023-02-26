@@ -19,6 +19,8 @@ namespace Rise.PhoneBook.DbaApi.Business.Abstract
         StatusModel<Contact> Update(Contact entity);
         StatusModel<Contact> Delete(Expression<Func<Contact, bool>> filter);
         StatusModel<ResPersonContactModel> AddCustom(ReqPersonContactModel person);
-
+        StatusModel<ResPersonContactModel> DeleteCustom(Expression<Func<Contact, bool>> filter, bool isHardDelete);
+        StatusModel<IList<ResPersonContactModel>> GetListCustom(Expression<Func<Contact, bool>> filter);
+        StatusModel<ResAllPersonInfo> GetCustomPersonByAllInfo(Contact entity, Guid personId);
     }
 }

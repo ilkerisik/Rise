@@ -19,5 +19,15 @@ namespace Rise.PhoneBook.ApiCore.Core.Custom
             [System.ComponentModel.Description("Veri Yok")]
             EmptyData = 3
         }
+        public enum ContactTypeEnum
+        {
+            [System.ComponentModel.Description("Telefon Numarası")]
+            Phone = 1,
+            [System.ComponentModel.Description(" E-mail Adresi")]
+            Mail = 2,
+            [System.ComponentModel.Description("Konum")]
+            Location = 3,
+
+        }
     }
 }
