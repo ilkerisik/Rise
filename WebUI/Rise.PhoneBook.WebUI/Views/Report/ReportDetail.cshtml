@@ -1,0 +1,46 @@
+﻿@using Rise.PhoneBook.WebUI.Models.ApiModel;
+@model ResReportDetailModel
+
+<!-- Recent Sales -->
+<div class="col-12">
+    <div class="card recent-sales overflow-auto">
+
+        <div class="card-body">
+            <h5 class="card-title">Kuruktaki Talepler <span>| Raporlar</span></h5>
+
+            <table class="table table-borderless datatable">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">İstek Tarihi</th>
+                        <th scope="col">Rapor Tarihi</th>
+                        <th scope="col">Rapor Excel Link</th>
+                        <th scope="col">Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        <tr>
+                            <th scope="row"><a href="#">#@Model.RequestId</a></th>
+                            <td>@Model.RequestDate</td>
+                            <td>@Model.ReportCreateDate</td>
+                            <td><a href="@Model.DownloadUrl" class="text-primary">@Model.DownloadUrl</a></td>
+                            @if (Model.Status == "Tamamlandı")
+                            {
+                                <td><span class="badge bg-success">@Model.Status</span></td>
+                            }
+                            else
+                            {
+                                <td><span class="badge bg-warning">@Model.Status</span></td>
+                            }
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div><!-- End Recent Sales -->

@@ -1,0 +1,109 @@
+﻿@using Rise.PhoneBook.WebUI.Models.ApiModel;
+@model ResQueueProcessorModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Page Title";
+}
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Rapor</h5>
+                    <!-- General Form Elements -->
+                    @using (Html.BeginForm("", "", FormMethod.Post, new { @id = "panelForm", @class = "row g-3 needs-validation", enctype = "multipart/form-data" }))
+                    {
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Adı</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="location" id="location" class="form-control">
+                            </div>
+                        </div>
+                          <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Kaydet</label>
+                            <div class="col-sm-10">
+                                <button class="btn btn-primary btnSave" type="button">Kaydet</button>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Rapor Kuruk Detayı</h5>
+                        <!-- General Form Elements -->
+                       
+                            <div class="profile-overview" id="profile-overview">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label ">Durum</div>
+                            <div class="col-lg-9 col-md-8" id="status"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">İstek Id - Takip Id</div>
+                             <div class="col-lg-9 col-md-8" id="requestId"></div>
+                        </div>
+
+                       
+                    </div>
+                     
+
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+ 
+</section>
+
+<script>
+
+    $(document).ready(function() {
+           $(".btnSave").click(function(){
+                 Save();
+            });
+        });
+        function Save(){
+            debugger;
+            $.ajax({
+                           type: "post",
+                            url: '/Report/ReportRequest?location='+$("#location").val(),
+                            success: function (result) {
+                                debugger;
+                            if (result.actionStatus == 'Successful') {
+                                    alert(result.actionMessage);
+                                    location.href = result.returnUrl;
+                            }
+                            else if (result.actionStatus == 'Warning') {
+                                   alert(result.actionMessage);
+
+                            }
+                            else {
+
+                                    alert(result.actionMessage);
+                                }
+                            },
+                            error: function () {
+                              },
+                            beforeSend: function () {
+                             }
+                        });
+
+        }
+
+</script>

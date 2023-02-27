@@ -1,0 +1,46 @@
+﻿@using Rise.PhoneBook.WebUI.Models.ApiModel;
+@model List<ResReportDetailModel>
+
+
+<!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+                   
+                <div class="card-body">
+                  <h5 class="card-title">Kuruktaki Talepler <span>| Raporlar</span></h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">İstek Tarihi</th>
+                        <th scope="col">Rapor Tarihi</th>
+                        <th scope="col">Rapor Excel Link</th>
+                        <th scope="col">Durum</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                     @foreach (var item in Model)
+                     {
+                       <tr>
+                        <th scope="row"><a href="#">#@item.RequestId</a></th>
+                        <td>@item.RequestDate</td>
+                        <td>@item.ReportCreateDate</td>
+                        <td><a href="@item.DownloadUrl" class="text-primary">@item.DownloadUrl</a></td>
+                        @if(item.Status == "Tamamlandı")
+                        {
+                                <td><span class="badge bg-success">@item.Status</span></td>
+                            }else
+                            {
+                                     <td><span class="badge bg-warning">@item.Status</span></td>
+                            }
+                        </tr>
+                     }
+
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales -->

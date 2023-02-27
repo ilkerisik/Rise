@@ -1,0 +1,73 @@
+﻿@using Rise.PhoneBook.WebUI.Models.ApiModel;
+@model ResAllPersonInfo
+<section class="section">
+    <div class="row">
+        <div class="col-4">
+            <div class="card recent-sales overflow-auto">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Sales <span>| Today</span></h5>
+                    @if (Model != null)
+                    { 
+                        <div class="profile-overview" id="profile-overview">
+                        <h5 class="card-title">Profile Details</h5>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label ">Kişi</div>
+                            <div class="col-lg-9 col-md-8">@Model.Firstname @Model.Lastname</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Firma</div>
+                            <div class="col-lg-9 col-md-8">@Model.Company</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Oluşturma Tarihi</div>
+                            <div class="col-lg-9 col-md-8">@Model.CreatedOn</div>
+                        </div>
+                    </div>
+                    }
+                   
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="card recent-sales overflow-auto">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Sales <span>| Today</span></h5>
+
+                    <table class="table table-borderless datatable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">İletişim Id</th>
+                                <th scope="col">Tip</th>
+                                <th scope="col">Bilgi</th>
+                                <th scope="col">Sil</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model != null && Model.ContactInfoList.Count > 0)
+                                    foreach (var item in Model.ContactInfoList)
+                                    {
+                                        <tr>
+                                            <th scope="row"><a href="#">#@item.PersonId</a></th>
+                                            <td>@item.PersonContactId</td>
+                                            <td><a href="#" class="text-primary">@item.ContactType</a></td>
+                                            <td>@item.Info</td>
+                                            <td><a target="_blank" href="/Contact/DeleteInfo?personId=@item.PersonId&personContactId=@item.PersonContactId"><span class="badge bg-primary">Sil</span></a></td>
+                                        </tr>
+                                    }
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

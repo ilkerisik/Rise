@@ -1,0 +1,45 @@
+﻿@using Rise.PhoneBook.WebUI.Models.ApiModel;
+@model List<ResPersonContactModel>
+
+<section class="section">
+    <div class="row">
+        <div class="col-12">
+            <div class="card recent-sales overflow-auto">
+                <div class="card-body">
+                    <h5 class="card-title">Kişiler <span>| Kişi Listesi</span></h5>
+
+                    <table class="table table-borderless datatable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Kişi</th>
+                                <th scope="col">Firma</th>
+                                <th scope="col">Oluşturma Tarihi</th>
+                                <th scope="col">Bilgi Ekle</th>
+                                <th scope="col">Detay</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <th scope="row"><a href="#">#@item.PersonId</a></th>
+                                        <td>@item.Firstname @item.Lastname</td>
+                                        <td><a href="#" class="text-primary">@item.Company</a></td>
+                                        <td>@item.CreatedOn</td>
+                                        <td><a target="_blank" href="/Contact/CreateInfo?personId=@item.PersonId"><span class="badge bg-primary">Bilgi Ekle</span></a></td>
+                                        <td><a target="_blank" href="/Contact/PersonInfo?personId=@item.PersonId"><span class="badge bg-success">Detay</span></a></td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

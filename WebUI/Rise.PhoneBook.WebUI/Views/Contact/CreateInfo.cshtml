@@ -1,0 +1,96 @@
+﻿@using Rise.PhoneBook.WebUI.Models.ApiModel;
+@model ReqPersonContactInfoModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Page Title";
+}
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Kişi Ekle</h5>
+                    <!-- General Form Elements -->
+                    @using (Html.BeginForm("", "", FormMethod.Post, new { @id = "panelForm", @class = "row g-3 needs-validation", enctype = "multipart/form-data" }))
+                    {
+                        @Html.HiddenFor(m => m.PersonId)
+                        @Html.HiddenFor(m => m.PersonContactId)
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Tip</label>
+                            <div class="col-sm-10">
+                                 <select name="ContactType" id="ContactType" class="form-control">
+                                     <option value="Phone">Telefon</option>
+                                     <option value="Mail">E-Posta</option>
+                                     <option value="Location">Şehir</option>
+                                 </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputEmail" class="col-sm-2 col-form-label">Bilgi</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Info, new {@class= "form-control"})
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Kaydet</label>
+                            <div class="col-sm-10">
+                                <button class="btn btn-primary btnSave" type="button">Kaydet</button>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</section>
+
+<script>
+
+    $(document).ready(function() {
+           $(".btnSave").click(function(){
+                 Save();
+            });
+        });
+        function Save(){
+            debugger;
+               var  formData = new FormData();
+                    formData.append("PersonId",$("#PersonId").val());
+                    formData.append("PersonContactId",$("#PersonContactId").val());
+                    formData.append("Info",$("#Info").val());
+                    formData.append("ContactType",$("#ContactType").val());
+            $.ajax({
+                           type: "post",
+                            dataType: "json",
+                            url: '/Contact/CreateInfoModel',
+                            processData: false,
+                            contentType: false,
+                            data: formData,
+                            success: function (result) {
+                            if (result.actionStatus == 'Successful') {
+                                    alert(result.actionMessage);
+                                    location.href = result.returnUrl;
+                            }
+                            else if (result.actionStatus == 'Warning') {
+                                   alert(result.actionMessage);
+
+                            }
+                            else {
+
+                                    alert(result.actionMessage);
+                                }
+                            },
+                            error: function () {
+                              },
+                            beforeSend: function () {
+                             }
+                        });
+
+        }
+
+</script>
