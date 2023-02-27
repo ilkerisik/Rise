@@ -33,6 +33,8 @@ Nice
 -- Test
 ---- Rise.PhoneBook.DbaApi.TestProject
 ---- Rise.PhoneBook.ReportApi.TestProject
+
+-- Rise.PhoneBook.WebUI
 ```
 
 
@@ -49,7 +51,8 @@ Nice
 
 * Kuyruk ve raporlama işlemleri sonlandıktan sonra veya işlem sırasında ReportApi den gönderilen talep sonucunda gelen **RequestId** ile istekler yapılarak ilgili işlemin sonucu öğrenebilir ve duruma göre mesajda gelen dosyayı yine ReportApi metotları ile indirebilirsiniz.
 
-
+* DbaApi ve ReportApi Web Api uçlarına algoritma gereğince ekleme, silme ve listeleme işlemleri için basit bir WebUI tasarımı eklendi.
+Arayüz ile kuyruğa veri gönderme, takip etme ve normal veri işlemleri yapılması amaçlanmıştır
 
   
 ## Kullanılan Teknolojiler ve Nuget Paketleri 
